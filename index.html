@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IT Ticketing System (Prototype UI)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass {
+      background: rgba(255,255,255,0.75);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .tab-active {
+      @apply border-b-2 border-blue-600 font-semibold !important;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-tr from-blue-100 to-blue-300 min-h-screen flex items-center justify-center py-10">
+  <div class="glass p-0 md:p-10 w-full max-w-3xl shadow-xl">
+    <!-- Tab Selectors -->
+    <div class="flex">
+      <button id="userTabBtn" class="flex-1 py-4 px-4 border-b-2 border-blue-600 font-semibold text-blue-700 bg-white rounded-t-lg" onclick="showTab('user')">Submit Ticket</button>
+      <button id="adminTabBtn" class="flex-1 py-4 px-4 border-b-2 border-transparent text-blue-500 hover:bg-blue-50 rounded-t-lg" onclick="showTab('admin')">Admin Dashboard</button>
+    </div>
+    <!-- User Submission Form -->
+    <div id="userTab" class="p-6">
+      <h2 class="text-2xl font-bold mb-5 text-blue-800 flex items-center gap-2">
+        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="inline mb-1 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v6l4 2"></path><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle></svg>
+        IT Ticket Submission
+      </h2>
+      <form id="ticketForm" class="space-y-4" autocomplete="off">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Your Name</label>
+          <input required name="name" class="mt-1 px-3 py-2 w-full border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-300" placeholder="Jane Smith" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email Address</label>
+          <input required type="email" name="email" class="mt-1 px-3 py-2 w-full border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-300" placeholder="jane@example.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Issue Title</label>
+          <input required name="title" class="mt-1 px-3 py-2 w-full border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-300" placeholder="Cannot connect to VPN" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea required name="description" rows="3" class="mt-1 px-3 py-2 w-full border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-300" placeholder="Describe your issue..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Urgency</label>
+          <select name="urgency" class="mt-1 px-3 py-2 w-full border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-300">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        </div>
+        <div class="pt-2">
+          <button class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded text-white font-bold text-lg transition">Submit Ticket</button>
+        </div>
+        <div id="userMsg" class="text-green-600 mt-2 text-center" style="display:none;"></div>
+      </form>
+      <div class="pt-6">
+        <img 
+          src="https://placehold.co/600x180" 
+          alt="Illustration of tech support agent at desk surrounded by computer equipment, flat-design, blue accents, modern workplace" 
+          class="mx-auto rounded-lg shadow-xl border border-blue-200"
+          onerror="this.style.display='none';"
+        />
+      </div>
+    </div>
+    <!-- Admin Dashboard -->
+    <div id="adminTab" class="p-6 hidden">
+      <h2 class="text-2xl font-bold mb-5 text-blue-800 flex items-center gap-2">
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="inline mb-1 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m-8 4h6m-6 4h4M9 3h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 17v-4h2v4"></path></svg>
+        Admin Dashboard
+      </h2>
+      <div class="bg-blue-50 p-3 rounded mb-4 text-blue-900 flex items-center gap-2">
+        <span class="font-semibold">Demo notice:</span>
+        No authentication in this HTML demo—add login in your real Next.js app!
+      </div>
+      <div class="my-3 flex justify-end">
+        <button onclick="fetchTickets()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded shadow-sm">Refresh Tickets</button>
+      </div>
+      <div id="ticketsArea">
+        <div class="text-center text-blue-500">No tickets loaded yet.</div>
+      </div>
+      <div class="pt-6">
+        <img 
+          src="https://placehold.co/600x180" 
+          alt="Admin monitoring support tickets on multiple screens in a high-tech control room, blue and white UI, flat vector art" 
+          class="mx-auto rounded-lg shadow-xl border border-blue-200"
+          onerror="this.style.display='none';"
+        />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple Tab Logic
+    function showTab(tab) {
+      document.getElementById('userTab').style.display = tab === 'user' ? '' : 'none';
+      document.getElementById('adminTab').style.display = tab === 'admin' ? '' : 'none';
+      document.getElementById('userTabBtn').classList.toggle('border-blue-600', tab === 'user');
+      document.getElementById('userTabBtn').classList.toggle('text-blue-700', tab === 'user');
+      document.getElementById('adminTabBtn').classList.toggle('border-blue-600', tab === 'admin');
+      document.getElementById('adminTabBtn').classList.toggle('text-blue-700', tab === 'admin');
+      document.getElementById('adminTabBtn').classList.toggle('text-blue-500', tab !== 'admin');
+    }
+    window.showTab = showTab; // For onclick
+
+    // Simulated backend (replace with real fetch/DB connection in Next.js)
+    let DEMO_TICKETS = [];
+
+    document.getElementById('ticketForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        title: form.title.value,
+        description: form.description.value,
+        urgency: form.urgency.value,
+        created: new Date().toISOString(),
+        status: "Open"
+      };
+
+      // Simulate API POST - replace this with fetch('/api/tickets', {method: 'POST', body: JSON.stringify(data)})
+      DEMO_TICKETS.push(data);
+
+      form.reset();
+      // Show confirmation
+      document.getElementById('userMsg').textContent = "Your ticket has been submitted! Our team will respond soon.";
+      document.getElementById('userMsg').style.display = "block";
+      setTimeout(() => { document.getElementById('userMsg').style.display = "none"; }, 4000);
+    });
+
+    // Admin refresh logic
+    function fetchTickets() {
+      // Simulate API GET request
+      const ticketsArea = document.getElementById('ticketsArea');
+      if (DEMO_TICKETS.length === 0) {
+        ticketsArea.innerHTML = '<div class="text-center text-blue-500">No tickets submitted yet.</div>';
+        return;
+      }
+      // Render as a table
+      let out = `
+        <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-blue-200 shadow-sm text-sm">
+          <thead class="bg-blue-200 text-blue-900">
+            <tr>
+              <th class="py-2 px-2 text-left">Time</th>
+              <th class="py-2 px-2 text-left">Title</th>
+              <th class="py-2 px-2 text-left">User</th>
+              <th class="py-2 px-2 text-left">Urgency</th>
+              <th class="py-2 px-2 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      for (let t of DEMO_TICKETS.slice().reverse()) {
+        out += `<tr class="border-t border-blue-100">
+          <td class="py-1 px-2">${new Date(t.created).toLocaleString()}</td>
+          <td class="py-1 px-2 font-bold">${t.title}</td>
+          <td class="py-1 px-2">${t.name} <span class="text-gray-400 text-xs block">${t.email}</span></td>
+          <td class="py-1 px-2"><span class="inline-block px-2 py-1 rounded text-white ${urgencyBadgeColor(t.urgency)}">${t.urgency}</span></td>
+          <td class="py-1 px-2">${statusBadge(t.status)}</td>
+        </tr>`;
+      }
+      out += '</tbody></table></div>';
+      ticketsArea.innerHTML = out;
+    }
+    window.fetchTickets = fetchTickets;
+
+    function urgencyBadgeColor(urgency) {
+      switch (urgency) {
+        case "Low": return "bg-green-500";
+        case "Medium": return "bg-yellow-500";
+        case "High": return "bg-orange-500";
+        case "Critical": return "bg-red-600";
+        default: return "bg-gray-400";
+      }
+    }
+    function statusBadge(status) {
+      return `<span class="inline-block px-2 py-1 rounded font-semibold ${status === 'Open' ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-600'}">${status}</span>`;
+    }
+
+    // Default: show user tab
+    showTab('user');
+  </script>
+</body>
+</html>
+
