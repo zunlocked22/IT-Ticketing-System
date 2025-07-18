@@ -1,0 +1,24 @@
+// pages/api/tickets.js
+import { MongoClient } from "mongodb";
+
+const uri = process.env.MONGODB_URI; // Add this in your .env.local
+const client = new MongoClient(uri);
+
+export default async function handler(req, res) {
+  await client.connect();
+  const db = client.db("ticket_system");
+  const collection = db.collection("tickets");
+
+  if (req.method === "POST") {
+    const ticket = req.body;
+    ticket.createdAt = new Date();
+    ticket.status = "Open";
+    await collection.insertOne(ticket);
+    res.status(200).json({message: "Ticket submitted"});
+  } else if (req.method === "GET") {
+    const tickets = await collection.find({}).sort({createdAt: -1}).toArray();
+    res.json({tickets});
+  } else {
+    res.status(405).json({message: "Method not allowed"});
+  }
+}
